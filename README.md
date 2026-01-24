@@ -69,29 +69,29 @@ Total Cost: ₹20k-50k (prototype)
 
 Project Structure
 smart-attendance-system/
-├── app.py                 # Flask backend + dashboard
-├── detect_track.py        # YOLO + DeepSORT + ArcFace
-├── train_faces.py         # Generate student embeddings
-├── data/                  # student_photos/, attendance.db
-├── templates/             # index.html (dashboard)
-├── static/                # CSS/JS
-├── requirements.txt       # All pip installs
-└── docker-compose.yml     # Easy deployment
+├── app.py                 # Flask backend + dashboard <br>
+├── detect_track.py        # YOLO + DeepSORT + ArcFace<br>
+├── train_faces.py         # Generate student embeddings<br>
+├── data/                  # student_photos/, attendance.db<br>
+├── templates/             # index.html (dashboard)<br>
+├── static/                # CSS/JS<br>
+├── requirements.txt       # All pip installs<br>
+└── docker-compose.yml     # Easy deployment<br>
 
-🎯 Features
-✅ Real-time attendance (25-30 FPS)
+🎯 Features<br>
+✅ Real-time attendance (25-30 FPS)<br>
 
-✅ Multi-classroom support
+✅ Multi-classroom support<br>
 
-✅ Live dashboard (student count, confidence)
+✅ Live dashboard (student count, confidence)<br>
 
-✅ CSV/Excel reports
+✅ CSV/Excel reports<br>
 
-✅ Email alerts (empty class, low attendance)
+✅ Email alerts (empty class, low attendance)<br>
 
-✅ Privacy-first (embeddings only)
+✅ Privacy-first (embeddings only)<br>
 
-✅ Mobile-friendly UI
+✅ Mobile-friendly UI<br>
 
 Test: 100 students, 5 classrooms
 - Precision: 92%
@@ -108,14 +108,14 @@ Pitch as semester project/hackathon
 
 Scale to entire department
 
-🚧 Roadmap
-✅ MVP: Single classroom (Week 1)
-✅ Multi-room + dashboard (Week 2)
-🔄 Teacher detection (Week 3)
-🔄 Engagement analytics (Week 4)
-🔄 Mobile app (Week 5)
+🚧 Roadmap<br>
+✅ MVP: Single classroom (Week 1)<br>
+✅ Multi-room + dashboard (Week 2)<br>
+🔄 Teacher detection (Week 3)<br>
+🔄 Engagement analytics (Week 4)<br>
+🔄 Mobile app (Week 5)<br>
 
-📄 License
+📄 License<br>
 MIT - Free for college use
 
 🙏 Acknowledgments
