@@ -53,12 +53,12 @@ Flask Dashboard → Live stats + CSV reports<br>
 
 📋 Tech Stack<br><br>
 
-Detection: YOLOv8 (Ultralytics) - 30 FPS
-Tracking: DeepSORT - Handles occlusions
-Face Recog: ArcFace (insightface) - 99.8% LFW
-Backend: Flask + SQLite/MySQL
-Frontend: HTML/CSS/JS - Live dashboard
-Deployment: Docker (college server)
+Detection: YOLOv8 (Ultralytics) - 30 FPS<br>
+Tracking: DeepSORT - Handles occlusions<br>
+Face Recog: ArcFace (insightface) - 99.8% LFW<br>
+Backend: Flask + SQLite/MySQL<br>
+Frontend: HTML/CSS/JS - Live dashboard<br>
+Deployment: Docker (college server)<br>
 
 🛠️ Hardware Needed<br><br>
 Camera: IP Webcam (₹3k) or USB
