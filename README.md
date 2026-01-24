@@ -28,22 +28,22 @@
 
 ## 🏗️ How It Works (Simple Flow)
 
-Classroom Camera → Video Stream (RTSP/Webcam)
-↓
+Classroom Camera → Video Stream (RTSP/Webcam)<br>
+↓<br>
 
-YOLOv8 → Detects "persons" (students/teacher)
-↓
+YOLOv8 → Detects "persons" (students/teacher)<br>
+↓<br>
 
-DeepSORT → Tracks each person with unique ID
-↓
+DeepSORT → Tracks each person with unique ID<br>
+↓<br>
 
-ArcFace → Extracts face embedding (128D vector)
-↓
+ArcFace → Extracts face embedding (128D vector)<br>
+↓<br>
 
-Match → Student DB → Log attendance (ID, time, subject)
-↓
+Match → Student DB → Log attendance (ID, time, subject)<br>
+↓<br>
 
-Flask Dashboard → Live stats + CSV reports
+Flask Dashboard → Live stats + CSV reports<br>
 
 
 **Accuracy**: 99.8% on LFW benchmark → 85-95% real classroom (Indian faces, lighting)[file:82]
