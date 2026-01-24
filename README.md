@@ -51,7 +51,7 @@ Flask Dashboard → Live stats + CSV reports
 ## 🚀 Quick Start (5 Minutes)
 
 
-📋 Tech Stack
+📋 Tech Stack<br><br>
 
 Detection: YOLOv8 (Ultralytics) - 30 FPS
 Tracking: DeepSORT - Handles occlusions
@@ -60,15 +60,15 @@ Backend: Flask + SQLite/MySQL
 Frontend: HTML/CSS/JS - Live dashboard
 Deployment: Docker (college server)
 
-🛠️ Hardware Needed
+🛠️ Hardware Needed<br><br>
 Camera: IP Webcam (₹3k) or USB
 
 Server: College GPU lab or RTX 3050 laptop
 
 Total Cost: ₹20k-50k (prototype)
 
-Project Structure
-smart-attendance-system/
+Project Structure<br>
+smart-attendance-system/<br>
 ├── app.py                 # Flask backend + dashboard <br>
 ├── detect_track.py        # YOLO + DeepSORT + ArcFace<br>
 ├── train_faces.py         # Generate student embeddings<br>
@@ -78,7 +78,7 @@ smart-attendance-system/
 ├── requirements.txt       # All pip installs<br>
 └── docker-compose.yml     # Easy deployment<br>
 
-🎯 Features<br>
+🎯 Features<br><br>
 ✅ Real-time attendance (25-30 FPS)<br>
 
 ✅ Multi-classroom support<br>
@@ -108,14 +108,14 @@ Pitch as semester project/hackathon
 
 Scale to entire department
 
-🚧 Roadmap<br>
+🚧 Roadmap<br><br>
 ✅ MVP: Single classroom (Week 1)<br>
 ✅ Multi-room + dashboard (Week 2)<br>
 🔄 Teacher detection (Week 3)<br>
 🔄 Engagement analytics (Week 4)<br>
 🔄 Mobile app (Week 5)<br>
 
-📄 License<br>
+📄 License<br><br>
 MIT - Free for college use
 
 🙏 Acknowledgments
