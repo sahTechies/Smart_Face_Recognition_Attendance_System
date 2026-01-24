@@ -50,14 +50,6 @@ Flask Dashboard → Live stats + CSV reports
 
 ## 🚀 Quick Start (5 Minutes)
 
-```bash
-git clone https://github.com/yourusername/smart-attendance-system.git
-cd smart-attendance-system
-python -m venv venv && source venv/bin/activate  # Windows: venv\Scripts\activate
-pip install -r requirements.txt
-python train_faces.py  # Add your student photos first
-python app.py
-# Open http://localhost:5000
 
 📋 Tech Stack
 
