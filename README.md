@@ -125,7 +125,7 @@ ArcFace - Face recognition
 
 DeepSORT - Tracking
 
-Original inspo: [Real-time Attendance GitHub][web:50]
+
 
 
 
