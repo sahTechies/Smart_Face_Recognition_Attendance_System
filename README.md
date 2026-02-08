@@ -116,9 +116,9 @@ SMART_FACE_RECOGNITION_ATTENDANCE_SYSTEM/
 
 ## 🙏 Acknowledgments
 
-- **YOLOv8** - Object detection
-- **ArcFace** - Face recognition
-- **DeepSORT** - Tracking
+- **MediaPipe** - Object detection
+- **Scikit-Learn** - Face recognition
+- **SQLite** - Database
 
 
 
