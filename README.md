@@ -1,9 +1,7 @@
 # Smart Face Recognition Attendance System 🚀
 
-**Automated real-time classroom attendance using YOLOv8 + ArcFace + DeepSORT**  
+**Automated real-time classroom attendance using MediaPipe (Detection), Scikit-Learn (Recognition), SQLite (Database)**  
 *Built for SRM IST Trichy & similar colleges | 85-95% accuracy | 25-30 FPS*
-
-[![Demo Video](demo.gif)](demo.mp4)
 
 ## 🎯 Problem Solved
 
@@ -73,53 +71,54 @@ SMART_FACE_RECOGNITION_ATTENDANCE_SYSTEM/
 ├── model.pkl                  # The saved/trained Machine Learning model file
 ├── attendance.db              # SQLite database storing student and attendance data
 └── requirements.txt           # List of Python dependencies
+```
 
-🎯 Features<br><br>
-✅ Real-time attendance (25-30 FPS)<br>
+---
 
-✅ Multi-classroom support<br>
+## 🎯 Features
 
-✅ Live dashboard (student count, confidence)<br>
+✅ **Real-time attendance** (25-30 FPS)  
+✅ **Multi-classroom support**  
+✅ **Live dashboard** (student count, confidence)  
+✅ **CSV/Excel reports**  
+✅ **Email alerts** (empty class, low attendance)  
+✅ **Privacy-first** (embeddings only, no photos stored)  
+✅ **Mobile-friendly UI**  
 
-✅ CSV/Excel reports<br>
+### Performance Metrics
 
-✅ Email alerts (empty class, low attendance)<br>
+**Test Results: 100 students, 5 classrooms**
+- **Precision:** 92%
+- **Recall:** 88%  
+- **F1-Score:** 90%
+- **Processing Speed:** 28 FPS (RTX 3050)
 
-✅ Privacy-first (embeddings only)<br>
+### 🤝 For SRM Trichy Students
 
-✅ Mobile-friendly UI<br>
+- Use college lab GPUs (free)
+- Test on actual classrooms (get faculty approval)
+- Pitch as semester project/hackathon
+- Scale to entire department
 
-Test: 100 students, 5 classrooms
-- Precision: 92%
-- Recall: 88%  
-- F1-Score: 90%
-- Processing: 28 FPS (RTX 3050)
+---
 
-🤝 For SRM Trichy Students
-Use college lab GPUs (free)
+## 🚧 Roadmap
 
-Test on actual classrooms (get faculty approval)
+✅ **Week 1:** MVP - Single classroom  
+✅ **Week 2:** Multi-room + dashboard  
+🔄 **Week 3:** Teacher detection  
+🔄 **Week 4:** Engagement analytics  
+🔄 **Week 5:** Mobile app  
 
-Pitch as semester project/hackathon
 
-Scale to entire department
 
-🚧 Roadmap<br><br>
-✅ MVP: Single classroom (Week 1)<br>
-✅ Multi-room + dashboard (Week 2)<br>
-🔄 Teacher detection (Week 3)<br>
-🔄 Engagement analytics (Week 4)<br>
-🔄 Mobile app (Week 5)<br>
+---
 
-📄 License<br><br>
-MIT - Free for college use
+## 🙏 Acknowledgments
 
-🙏 Acknowledgments
-YOLOv8 - Object detection
-
-ArcFace - Face recognition
-
-DeepSORT - Tracking
+- **YOLOv8** - Object detection
+- **ArcFace** - Face recognition
+- **DeepSORT** - Tracking
 
 
 
