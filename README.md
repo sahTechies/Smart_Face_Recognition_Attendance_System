@@ -26,57 +26,53 @@
 | **Analytics** | None | Live counts, reports, alerts |
 | **Privacy** | N/A | Embeddings only (no photos) |
 
-## 🏗️ How It Works (Simple Flow)
+# Smart Face Recognition Attendance System
 
-Classroom Camera → Video Stream (RTSP/Webcam)<br>
-↓<br>
+A lightweight, Flask-based attendance system that uses Computer Vision to mark attendance automatically using facial recognition.
 
-YOLOv8 → Detects "persons" (students/teacher)<br>
-↓<br>
+## 🚀 How It Works (The Actual Flow)
 
-DeepSORT → Tracks each person with unique ID<br>
-↓<br>
+1.  **Capture:** The system captures video frames using **OpenCV**.
+2.  **Detection:** **MediaPipe** (Google's lightweight model) detects faces in real-time.
+3.  **Recognition:** The face data is processed and compared against a trained **Scikit-Learn (KNN/SVM)** model stored in `model.pkl`.
+4.  **Logging:** If a match is found, the student is marked "Present" in the **SQLite** database (`attendance.db`).
+5.  **Interface:** A **Flask** web dashboard displays live stats, allows for CSV exports, and manages student registration.
 
-ArcFace → Extracts face embedding (128D vector)<br>
-↓<br>
+---
 
-Match → Student DB → Log attendance (ID, time, subject)<br>
-↓<br>
+## 📋 Tech Stack
 
-Flask Dashboard → Live stats + CSV reports<br>
+* **Backend:** Python, Flask (Web Framework)
+* **Computer Vision:** OpenCV (`cv2`), MediaPipe
+* **Machine Learning:** Scikit-Learn (`sklearn`), NumPy, Pandas
+* **Database:** SQLite (`attendance.db`)
+* **Frontend:** HTML5, CSS3, Bootstrap 5, JavaScript
+* **Deployment:** Can run locally on any CPU-based laptop.
 
+---
 
-**Accuracy**: 99.8% on LFW benchmark → 85-95% real classroom (Indian faces, lighting)[file:82]
+## 📂 Project Structure
 
-## 🚀 Quick Start (5 Minutes)
-
-
-📋 Tech Stack<br><br>
-
-Detection: YOLOv8 (Ultralytics) - 30 FPS<br>
-Tracking: DeepSORT - Handles occlusions<br>
-Face Recog: ArcFace (insightface) - 99.8% LFW<br>
-Backend: Flask + SQLite/MySQL<br>
-Frontend: HTML/CSS/JS - Live dashboard<br>
-Deployment: Docker (college server)<br>
-
-🛠️ Hardware Needed<br><br>
-Camera: IP Webcam (₹3k) or USB
-
-Server: College GPU lab or RTX 3050 laptop
-
-Total Cost: ₹20k-50k (prototype)
-
-Project Structure<br>
-smart-attendance-system/<br>
-├── app.py                 # Flask backend + dashboard <br>
-├── detect_track.py        # YOLO + DeepSORT + ArcFace<br>
-├── train_faces.py         # Generate student embeddings<br>
-├── data/                  # student_photos/, attendance.db<br>
-├── templates/             # index.html (dashboard)<br>
-├── static/                # CSS/JS<br>
-├── requirements.txt       # All pip installs<br>
-└── docker-compose.yml     # Easy deployment<br>
+```text
+SMART_FACE_RECOGNITION_ATTENDANCE_SYSTEM/
+├── dataset/                   # Folder containing raw images of students for training
+├── static/                    # CSS, JavaScript, and Images for the web UI
+│   ├── css/
+│   ├── js/
+│   └── images/
+├── templates/                 # HTML Templates for Flask
+│   ├── base_clean.html        # Master layout file
+│   ├── index.html             # Main dashboard
+│   ├── attendance_record.html # Attendance list view
+│   ├── add_student.html       # Student registration form
+│   └── ...
+├── app.py                     # Main Flask application entry point
+├── attendance_utils.py        # Helper functions (Email sending, DB management)
+├── model.py                   # Script to train the Face Recognition model
+├── video_streaming.py         # Logic for camera feed and face detection
+├── model.pkl                  # The saved/trained Machine Learning model file
+├── attendance.db              # SQLite database storing student and attendance data
+└── requirements.txt           # List of Python dependencies
 
 🎯 Features<br><br>
 ✅ Real-time attendance (25-30 FPS)<br>
