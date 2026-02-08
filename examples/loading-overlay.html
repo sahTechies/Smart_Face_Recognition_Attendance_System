@@ -1,0 +1,229 @@
+<!-- Modern Loading Overlay - HTML Structure -->
+<div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-content">
+        <div class="loading-spinner"></div>
+        <div class="loading-text" id="loadingText">Processing...</div>
+    </div>
+</div>
+
+<!-- Button Example with Loading Integration -->
+<button class="btn btn-primary" onclick="showLoading('Sending emails...')" id="sendEmailsBtn">
+    <i class="fas fa-paper-plane"></i> 
+    <span class="btn-text">Send Emails</span>
+</button>
+
+<script>
+// Modern Loading Overlay - JavaScript Implementation
+
+/**
+ * Show loading overlay with custom message
+ * @param {string} message - Loading message to display
+ * @param {number} timeout - Optional timeout in milliseconds
+ */
+function showLoading(message = 'Processing...', timeout = null) {
+    const overlay = document.getElementById('loadingOverlay');
+    const textElement = document.getElementById('loadingText');
+    
+    textElement.textContent = message;
+    overlay.classList.add('show');
+    
+    // Prevent scrolling while loading
+    document.body.style.overflow = 'hidden';
+    
+    // Optional auto-hide after timeout
+    if (timeout) {
+        setTimeout(() => {
+            hideLoading();
+        }, timeout);
+    }
+}
+
+/**
+ * Hide loading overlay
+ */
+function hideLoading() {
+    const overlay = document.getElementById('loadingOverlay');
+    overlay.classList.remove('show');
+    
+    // Restore scrolling
+    document.body.style.overflow = '';
+}
+
+/**
+ * Enhanced async function wrapper with loading
+ * @param {Promise} promise - Async operation to perform
+ * @param {string} loadingMessage - Message to show during loading
+ * @param {string} successMessage - Optional success message
+ * @param {string} errorMessage - Optional error message
+ */
+async function withLoading(promise, loadingMessage = 'Processing...', successMessage = null, errorMessage = null) {
+    try {
+        showLoading(loadingMessage);
+        const result = await promise;
+        hideLoading();
+        
+        if (successMessage) {
+            showNotification(successMessage, 'success');
+        }
+        
+        return result;
+    } catch (error) {
+        hideLoading();
+        
+        const message = errorMessage || error.message || 'An error occurred';
+        showNotification(message, 'error');
+        throw error;
+    }
+}
+
+// Example usage with async operations
+document.getElementById('sendEmailsBtn').addEventListener('click', async function() {
+    const btnText = this.querySelector('.btn-text');
+    const originalText = btnText.textContent;
+    
+    try {
+        // Show loading immediately
+        showLoading('Sending attendance emails...');
+        
+        // Disable button during operation
+        this.disabled = true;
+        btnText.textContent = 'Sending...';
+        
+        // Simulate async operation
+        const response = await fetch('/send_emails', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ date: '2026-02-08' })
+        });
+        
+        const result = await response.json();
+        
+        // Hide loading and show success
+        hideLoading();
+        
+        if (result.success) {
+            showNotification('Emails sent successfully!', 'success');
+        } else {
+            showNotification(result.message || 'Failed to send emails', 'error');
+        }
+        
+    } catch (error) {
+        hideLoading();
+        showNotification('Network error occurred', 'error');
+        console.error('Error:', error);
+    } finally {
+        // Restore button
+        this.disabled = false;
+        btnText.textContent = originalText;
+    }
+});
+
+// Keyboard shortcut to hide loading overlay (ESC key)
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+        hideLoading();
+    }
+});
+
+// Show notification helper
+function showNotification(message, type = 'info') {
+    const notification = document.createElement('div');
+    notification.className = `notification notification-${type}`;
+    notification.innerHTML = `
+        <div class="notification-content">
+            <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+            <span>${message}</span>
+        </div>
+        <button class="notification-close" onclick="this.parentElement.remove()">
+            <i class="fas fa-times"></i>
+        </button>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Auto-hide after 5 seconds
+    setTimeout(() => {
+        if (notification.parentElement) {
+            notification.remove();
+        }
+    }, 5000);
+}
+</script>
+
+<style>
+/* Notification Styles */
+.notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 10000;
+    min-width: 300px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    border-left: 4px solid var(--primary-brand);
+    animation: slideIn 0.3s ease;
+}
+
+.notification-success {
+    border-left-color: var(--accent-action);
+}
+
+.notification-error {
+    border-left-color: #dc3545;
+}
+
+.notification-content {
+    display: flex;
+    align-items: center;
+    padding: 16px;
+    gap: 12px;
+}
+
+.notification-content i {
+    font-size: 1.2rem;
+}
+
+.notification-close {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: none;
+    border: none;
+    font-size: 0.8rem;
+    color: var(--text-light);
+    cursor: pointer;
+    padding: 4px;
+}
+
+.notification-close:hover {
+    color: var(--text-dark);
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+/* Enhanced loading animation variants */
+.loading-spinner-pulse {
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.05);
+        opacity: 0.8;
+    }
+}
+</style>

@@ -1,0 +1,248 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Attendance Records</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+<div class="container my-4">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+      <h4>Attendance Records</h4>
+      {% if view_type == "absent" %}
+        <span class="badge bg-danger fs-6">🔴 Absent Students ({{ records|length }})</span>
+      {% else %}
+        <span class="badge bg-success fs-6">✅ Present Students ({{ records|length }})</span>
+      {% endif %}
+    </div>
+    <div>
+      <a class="btn btn-outline-info" href="/registered_students">👥 Students</a>
+      <button onclick="downloadDailyAttendance()" class="btn btn-outline-primary">📊 Daily Attendance</button>
+      <a class="btn btn-outline-success" href="/download_csv">Download CSV</a>
+      <a class="btn btn-outline-secondary" href="/">Back</a>
+    </div>
+  </div>
+
+  <!-- Email Notification Section -->
+  <div class="card p-3 mb-3 bg-info bg-opacity-10 border-info">
+    <h5 class="mb-3">📧 Send Attendance Emails</h5>
+    <div class="row g-3">
+      <div class="col-md-6">
+        <label for="emailDate" class="form-label fw-bold">Select Date for Email Report:</label>
+        <input type="date" id="emailDate" class="form-control" max="">
+        <small class="text-muted">Emails will be sent to all students/parents for the selected date</small>
+      </div>
+      <div class="col-md-6 d-flex align-items-end">
+        <button onclick="sendAttendanceEmails()" class="btn btn-primary" id="sendEmailBtn">
+          <span id="emailBtnText">📧 Send Emails</span>
+        </button>
+      </div>
+    </div>
+    <div id="emailStatus" class="mt-3" style="display: none;">
+      <div class="alert alert-info">
+        <strong>Status:</strong> <span id="emailStatusText">Preparing to send emails...</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="mb-3">
+    <div class="d-flex flex-wrap gap-2 mb-2">
+      <a href="/attendance_record?period=all&view=present" class="btn btn-sm {{ 'btn-primary' if view_type != 'absent' else 'btn-light' }}">All Present</a>
+      <a href="/attendance_record?period=daily&view=present" class="btn btn-sm {{ 'btn-primary' if period == 'daily' and view_type != 'absent' else 'btn-light' }}">Daily Present</a>
+      <a href="/attendance_record?period=weekly&view=present" class="btn btn-sm {{ 'btn-primary' if period == 'weekly' and view_type != 'absent' else 'btn-light' }}">Weekly Present</a>
+      <a href="/attendance_record?period=monthly&view=present" class="btn btn-sm {{ 'btn-primary' if period == 'monthly' and view_type != 'absent' else 'btn-light' }}">Monthly Present</a>
+    </div>
+    <div class="d-flex flex-wrap gap-2">
+      <a href="/attendance_record?period=daily&view=absent" class="btn btn-sm {{ 'btn-danger' if view_type == 'absent' and period == 'daily' else 'btn-light' }}">🔴 Daily Absent</a>
+      <a href="/attendance_record?period=weekly&view=absent" class="btn btn-sm {{ 'btn-danger' if view_type == 'absent' and period == 'weekly' else 'btn-light' }}">🔴 Weekly Absent</a>
+      <a href="/attendance_record?period=monthly&view=absent" class="btn btn-sm {{ 'btn-danger' if view_type == 'absent' and period == 'monthly' else 'btn-light' }}">🔴 Monthly Absent</a>
+    </div>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table table-striped">
+      <thead class="table-dark">
+        {% if view_type == "absent" %}
+          <tr>
+            <th>Student ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Roll No</th>
+            <th>Class</th>
+            <th>Section</th>
+            <th>Reg No</th>
+            <th>Registered On</th>
+          </tr>
+        {% else %}
+          <tr>
+            <th>ID</th>
+            <th>Student ID</th>
+            <th>Name</th>
+            <th>Timestamp (UTC)</th>
+          </tr>
+        {% endif %}
+      </thead>
+      <tbody>
+      {% for r in records %}
+        {% if view_type == "absent" %}
+          <tr class="table-warning">
+            <td>{{ r[0] }}</td>
+            <td>{{ r[1] or '-' }}</td>
+            <td>{{ r[2] or '-' }}</td>
+            <td>{{ r[3] or '-' }}</td>
+            <td>{{ r[4] or '-' }}</td>
+            <td>{{ r[5] or '-' }}</td>
+            <td>{{ r[6] or '-' }}</td>
+            <td>{{ r[7] or '-' }}</td>
+          </tr>
+        {% else %}
+          <tr>
+            <td>{{ r[0] }}</td>
+            <td>{{ r[1] }}</td>
+            <td>{{ r[2] }}</td>
+            <td>{{ r[3] }}</td>
+          </tr>
+        {% endif %}
+      {% endfor %}
+      </tbody>
+    </table>
+    {% if records|length == 0 %}
+      <div class="text-center py-4">
+        <p class="text-muted">
+          {% if view_type == "absent" %}
+            {% if period == "daily" %}
+              No absent students found for today. All students have marked attendance! ✅
+            {% elif period == "weekly" %}
+              No absent students found for this week. All students have marked attendance! ✅
+            {% elif period == "monthly" %}
+              No absent students found for this month. All students have marked attendance! ✅
+            {% else %}
+              No absent students found.
+            {% endif %}
+          {% else %}
+            No attendance records found for this period.
+          {% endif %}
+        </p>
+      </div>
+    {% endif %}
+  </div>
+</div>
+<script>
+// Initialize email date input with today's date
+document.addEventListener('DOMContentLoaded', function() {
+  const emailDate = document.getElementById('emailDate');
+  const today = new Date().toISOString().split('T')[0];
+  emailDate.max = today;
+  emailDate.value = today;
+});
+
+function downloadDailyAttendance() {
+  const dateInput = prompt("Enter date for daily attendance report (YYYY-MM-DD) or press OK for today:", new Date().toISOString().split('T')[0]);
+  
+  if (dateInput === null) {
+    return; // User cancelled
+  }
+  
+  let date = dateInput.trim() || new Date().toISOString().split('T')[0];
+  
+  // Validate date format
+  if (!date.match(/^\d{4}-\d{2}-\d{2}$/)) {
+    alert('Invalid date format. Please use YYYY-MM-DD format.');
+    return;
+  }
+  
+  // Download daily attendance CSV
+  window.open(`/download_daily_attendance?date=${encodeURIComponent(date)}`, '_blank');
+}
+
+async function sendAttendanceEmails() {
+  const emailDate = document.getElementById('emailDate').value;
+  const sendBtn = document.getElementById('sendEmailBtn');
+  const btnText = document.getElementById('emailBtnText');
+  const emailStatus = document.getElementById('emailStatus');
+  const statusText = document.getElementById('emailStatusText');
+  
+  if (!emailDate) {
+    alert('Please select a date for the email report');
+    return;
+  }
+  
+  // Confirm before sending
+  const confirmMessage = `Are you sure you want to send attendance emails for ${emailDate}?\n\nEmails will be sent to all students/parents informing them of their attendance status.\n\nThis may take a few minutes depending on the number of students.`;
+  
+  if (!confirm(confirmMessage)) {
+    return;
+  }
+  
+  // Disable button and show loading state
+  sendBtn.disabled = true;
+  btnText.textContent = '⏳ Sending...';
+  emailStatus.style.display = 'block';
+  statusText.textContent = 'Connecting to email server...';
+  
+  try {
+    const response = await fetch('/send_emails', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        date: emailDate
+      })
+    });
+    
+    const result = await response.json();
+    
+    if (result.success) {
+      // Success
+      statusText.innerHTML = `
+        <div class="text-success">
+          <strong>✅ Email sending completed successfully!</strong><br>
+          📧 Sent: ${result.emails_sent}<br>
+          ${result.emails_failed > 0 ? `❌ Failed: ${result.emails_failed}<br>` : ''}
+          📅 Date: ${emailDate}<br>
+          👥 Total Students: ${result.total_students}
+        </div>
+      `;
+      
+      // Show success alert
+      alert(`Email sending completed!\n\n${result.message}`);
+      
+    } else {
+      // Error
+      statusText.innerHTML = `
+        <div class="text-danger">
+          <strong>❌ Email sending failed</strong><br>
+          Error: ${result.message}
+        </div>
+      `;
+      
+      alert(`Failed to send emails: ${result.message}`);
+    }
+    
+  } catch (error) {
+    console.error('Email sending error:', error);
+    statusText.innerHTML = `
+      <div class="text-danger">
+        <strong>❌ Network error</strong><br>
+        Please check your internet connection and try again.
+      </div>
+    `;
+    
+    alert('Network error occurred while sending emails. Please try again.');
+  } finally {
+    // Reset button
+    sendBtn.disabled = false;
+    btnText.textContent = '📧 Send Emails';
+    
+    // Hide status after 10 seconds
+    setTimeout(() => {
+      emailStatus.style.display = 'none';
+    }, 10000);
+  }
+}
+</script>
+</body>
+</html>

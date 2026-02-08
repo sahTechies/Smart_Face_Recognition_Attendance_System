@@ -1,0 +1,260 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Add Student</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <style>
+    .attendance-section {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border-radius: 10px;
+    }
+    .attendance-section h5 {
+      color: white;
+    }
+    .table-responsive {
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .badge {
+      font-size: 0.8em;
+    }
+    .form-label {
+      font-weight: 600;
+      color: #495057;
+    }
+  </style>
+</head>
+<body>
+<div class="container my-4">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card p-4 shadow-sm">
+        <h4 class="mb-3">Add Student & Capture Faces</h4>
+
+        <form id="studentForm">
+          <div class="row g-2">
+            <div class="col-md-6"><input class="form-control" name="name" placeholder="Full Name" required></div>
+            <div class="col-md-6"><input class="form-control" name="email" type="email" placeholder="Email Address" required></div>
+            <div class="col-md-4"><input class="form-control" name="roll" placeholder="Roll No"></div>
+            <div class="col-md-4"><input class="form-control" name="reg_no" placeholder="Registration No"></div>
+            <div class="col-md-4"><input class="form-control" name="class" placeholder="Class"></div>
+            <div class="col-md-6"><input class="form-control" name="sec" placeholder="Section"></div>
+          </div>
+          <div class="mt-3 d-flex gap-2">
+            <button id="saveInfoBtn" type="submit" class="btn btn-primary">Save Info</button>
+            <button id="startCaptureBtn" type="button" class="btn btn-warning" disabled>Start Capture (50)</button>
+            <button id="addStudentBtn" type="button" class="btn btn-success" disabled>Add Student</button>
+          </div>
+        </form>
+
+        <hr>
+
+        <!-- Attendance Check Section -->
+        <div class="card p-3 bg-light mb-4">
+          <h5 class="mb-3">📅 Check Present Students</h5>
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label for="attendanceDate" class="form-label">Select Date:</label>
+              <input type="date" id="attendanceDate" class="form-control" max="">
+            </div>
+            <div class="col-md-6 d-flex align-items-end">
+              <button onclick="checkPresentStudents()" class="btn btn-primary me-2">🔍 Check Present</button>
+              <button onclick="downloadPresentStudentsCSV()" class="btn btn-success" id="downloadCSVBtn" disabled>📥 Download CSV</button>
+            </div>
+          </div>
+          
+          <!-- Present Students List -->
+          <div id="presentStudentsContainer" class="mt-3" style="display: none;">
+            <h6 class="mb-2">
+              <span class="badge bg-success">Present Students (<span id="presentCount">0</span>)</span>
+              <span class="badge bg-warning ms-2">Absent Students (<span id="absentCount">0</span>)</span>
+            </h6>
+            <div class="table-responsive" style="max-height: 300px; overflow-y: auto;">
+              <table class="table table-sm table-striped">
+                <thead class="table-dark sticky-top">
+                  <tr>
+                    <th>Student ID</th>
+                    <th>Name</th>
+                    <th>Roll No</th>
+                    <th>Class</th>
+                    <th>Attendance Time</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tbody id="presentStudentsTableBody">
+                  <tr><td colspan="6" class="text-center">Loading...</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <hr>
+
+        <div class="text-center">
+          <video id="video" width="560" height="420" autoplay muted style="border-radius:10px;border:2px solid #e2e8f0;"></video>
+          <div class="mt-2">
+            <div id="captureStatus" class="small text-muted">Captured 0 / 50</div>
+            <div class="progress mt-1" style="height:12px;">
+              <div id="progressBar" class="progress-bar bg-success" style="width:0%"></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/camera_add_student.js') }}"></script>
+<script>
+let presentStudentsData = [];
+
+// Initialize date input with today's date
+document.addEventListener('DOMContentLoaded', function() {
+  const attendanceDate = document.getElementById('attendanceDate');
+  const today = new Date().toISOString().split('T')[0];
+  attendanceDate.max = today;
+  attendanceDate.value = today;
+});
+
+async function checkPresentStudents() {
+  const selectedDate = document.getElementById('attendanceDate').value;
+  const container = document.getElementById('presentStudentsContainer');
+  const tableBody = document.getElementById('presentStudentsTableBody');
+  const downloadBtn = document.getElementById('downloadCSVBtn');
+  
+  if (!selectedDate) {
+    alert('Please select a date');
+    return;
+  }
+  
+  try {
+    // Show loading state
+    container.style.display = 'block';
+    tableBody.innerHTML = '<tr><td colspan="6" class="text-center">Loading attendance data...</td></tr>';
+    downloadBtn.disabled = true;
+    
+    // Fetch present students data
+    const response = await fetch(`/present_students?date=${encodeURIComponent(selectedDate)}`);
+    const result = await response.json();
+    
+    if (response.ok) {
+      presentStudentsData = result.students;
+      displayPresentStudents(result);
+      downloadBtn.disabled = false;
+    } else {
+      tableBody.innerHTML = `<tr><td colspan="6" class="text-center text-danger">Error: ${result.error}</td></tr>`;
+    }
+  } catch (error) {
+    console.error('Error fetching present students:', error);
+    tableBody.innerHTML = '<tr><td colspan="6" class="text-center text-danger">Error loading data</td></tr>';
+  }
+}
+
+function displayPresentStudents(data) {
+  const tableBody = document.getElementById('presentStudentsTableBody');
+  const presentCount = document.getElementById('presentCount');
+  const absentCount = document.getElementById('absentCount');
+  
+  presentCount.textContent = data.present_count;
+  absentCount.textContent = data.absent_count;
+  
+  if (data.students.length === 0) {
+    tableBody.innerHTML = '<tr><td colspan="6" class="text-center">No students registered</td></tr>';
+    return;
+  }
+  
+  tableBody.innerHTML = data.students.map(student => `
+    <tr class="${student.status === 'Present' ? 'table-success' : 'table-warning'}">
+      <td><strong>${student.id}</strong></td>
+      <td>${student.name || '-'}</td>
+      <td>${student.roll || '-'}</td>
+      <td>${student.class || '-'}</td>
+      <td>
+        ${student.status === 'Present' ? 
+          `<small class="text-success">${formatTimestamp(student.attendance_time)}</small>` : 
+          '<span class="text-muted">Not marked</span>'}
+      </td>
+      <td>
+        <span class="badge ${student.status === 'Present' ? 'bg-success' : 'bg-warning'}">
+          ${student.status}
+        </span>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function formatTimestamp(timestamp) {
+  if (!timestamp || timestamp === 'Not marked') return 'Not marked';
+  try {
+    const date = new Date(timestamp);
+    return date.toLocaleTimeString('en-US', { 
+      hour: '2-digit', 
+      minute: '2-digit',
+      hour12: false 
+    });
+  } catch {
+    return timestamp;
+  }
+}
+
+function downloadPresentStudentsCSV() {
+  if (presentStudentsData.length === 0) {
+    alert('No data available to download');
+    return;
+  }
+  
+  const selectedDate = document.getElementById('attendanceDate').value;
+  const headers = ['Student ID', 'Name', 'Email', 'Roll No', 'Class', 'Section', 'Reg No', 'Status', 'Attendance Time'];
+  
+  const csvContent = [
+    headers.join(','),
+    ...presentStudentsData.map(student => [
+      student.id,
+      `"${student.name || ''}"`,
+      `"${student.email || ''}"`,
+      `"${student.roll || ''}"`,
+      `"${student.class || ''}"`,
+      `"${student.section || ''}"`,
+      `"${student.reg_no || ''}"`,
+      student.status,
+      `"${student.attendance_time}"`
+    ].join(','))
+  ].join('\n');
+  
+  // Add summary
+  const presentCount = presentStudentsData.filter(s => s.status === 'Present').length;
+  const absentCount = presentStudentsData.filter(s => s.status === 'Absent').length;
+  
+  const summary = [
+    '',
+    '',
+    '',
+    'Summary',
+    `"Total Students","${presentStudentsData.length}"`,
+    `"Present Students","${presentCount}"`,
+    `"Absent Students","${absentCount}"`,
+    `"Date","${selectedDate}"`
+  ].join('\n');
+  
+  const finalContent = csvContent + summary;
+  
+  // Download CSV file
+  const blob = new Blob([finalContent], { type: 'text/csv;charset=utf-8;' });
+  const link = document.createElement('a');
+  const url = URL.createObjectURL(blob);
+  link.setAttribute('href', url);
+  link.setAttribute('download', `present_students_${selectedDate}.csv`);
+  link.style.visibility = 'hidden';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+</script>
+</body>
+</html>

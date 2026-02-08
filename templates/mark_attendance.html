@@ -1,0 +1,73 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Mark Attendance</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <style>
+    .calendar-container {
+      background: #f8f9fa;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+    .date-display {
+      background: #007bff;
+      color: white;
+      padding: 8px 15px;
+      border-radius: 5px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+<div class="container my-4">
+  <div class="card p-4 shadow-sm">
+    <div class="d-flex justify-content-between align-items-center">
+      <h4>Mark Attendance</h4>
+      <div>
+        <a href="/registered_students" class="btn btn-info btn-sm me-2">👥 Students</a>
+        <button onclick="downloadTodayAttendance()" class="btn btn-success btn-sm me-2">📊 Today's Report</button>
+        <button id="startMarkBtn" class="btn btn-primary">Start</button>
+        <button id="stopMarkBtn" class="btn btn-danger" disabled>Stop</button>
+      </div>
+    </div>
+
+    <!-- Calendar Selection -->
+    <div class="calendar-container mt-3">
+      <div class="row align-items-center">
+        <div class="col-md-6">
+          <label for="attendanceDate" class="form-label fw-bold">Select Attendance Date:</label>
+          <input type="date" id="attendanceDate" class="form-control" max="">
+        </div>
+        <div class="col-md-6">
+          <div class="date-display">
+            Marking for: <span id="selectedDateDisplay">Today</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row mt-3">
+      <div class="col-md-7 text-center">
+        <video id="markVideo" width="560" height="420" autoplay muted style="border-radius:10px;border:2px solid #e2e8f0;"></video>
+        <div id="markStatus" class="mt-2 small text-muted">Waiting...</div>
+      </div>
+      <div class="col-md-5">
+        <h6>Recognized (session)</h6>
+        <ul id="recognizedList" class="list-group"></ul>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="{{ url_for('static', filename='js/camera_mark.js') }}"></script>
+<script>
+function downloadTodayAttendance() {
+  // Download today's attendance report with absent students
+  const today = new Date().toISOString().split('T')[0];
+  window.open(`/download_daily_attendance?date=${encodeURIComponent(today)}`, '_blank');
+}
+</script>
+</body>
+</html>

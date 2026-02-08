@@ -1,0 +1,439 @@
+/* Modern Enhanced UI/UX - Top-Tier SaaS Design */
+
+/* Google Fonts - Inter */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+    /* Strict Color Palette */
+    --primary-brand: #0d6efd;
+    --background: #f4f6f9;
+    --surface: #ffffff;
+    --text-dark: #2c3e50;
+    --text-light: #6c757d;
+    --accent-action: #198754;
+    
+    /* Enhanced Design Tokens */
+    --primary-hover: #0b5ed7;
+    --accent-hover: #157347;
+    --surface-border: #dee2e6;
+    --shadow-soft: 0 4px 6px rgba(0,0,0,0.05);
+    --shadow-hover: 0 8px 25px rgba(0,0,0,0.1);
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --border-radius-lg: 12px;
+    --border-radius-xl: 16px;
+}
+
+/* Modern Typography with Inter Font */
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    color: var(--text-dark);
+    line-height: 1.6;
+    font-weight: 400;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    color: var(--text-dark);
+    line-height: 1.3;
+}
+
+h1 { font-size: 2.5rem; font-weight: 700; }
+h2 { font-size: 2rem; font-weight: 700; }
+h3 { font-size: 1.75rem; font-weight: 600; }
+h4 { font-size: 1.5rem; font-weight: 600; }
+h5 { font-size: 1.25rem; font-weight: 600; }
+h6 { font-size: 1rem; font-weight: 600; }
+
+/* Navigation Links */
+.nav-link {
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+
+/* Body text with lighter weight */
+p, .form-text, .text-muted {
+    font-weight: 400;
+    font-family: 'Inter', sans-serif;
+}
+
+/* Enhanced Card Polish & Micro-Interactions */
+.modern-card {
+    background: var(--surface);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-soft);
+    padding: 24px;
+    margin-bottom: 24px;
+    transition: var(--transition-smooth);
+    border: none; /* Remove borders entirely */
+    position: relative;
+    overflow: hidden;
+}
+
+.modern-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, transparent 0%, rgba(13, 110, 253, 0.02) 100%);
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+    opacity: 0;
+}
+
+.modern-card:hover::before {
+    opacity: 1;
+}
+
+.modern-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-hover);
+}
+
+/* Stat Cards with Enhanced Hover */
+.stat-card {
+    background: var(--surface);
+    border-radius: var(--border-radius-lg);
+    padding: 20px;
+    text-align: center;
+    box-shadow: var(--shadow-soft);
+    transition: var(--transition-smooth);
+    border: none;
+    position: relative;
+    overflow: hidden;
+}
+
+.stat-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-hover);
+}
+
+.stat-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--primary-brand);
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+}
+
+.stat-card:hover::after {
+    transform: scaleX(1);
+}
+
+/* Modernized Tables with Status Pills */
+.modern-table {
+    background: var(--surface);
+    border-radius: var(--border-radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-soft);
+    border: none;
+}
+
+.table {
+    margin-bottom: 0;
+}
+
+.table thead th {
+    background: var(--background);
+    color: var(--text-dark);
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+    border-bottom: none;
+    padding: 16px 12px;
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.table tbody td {
+    padding: 14px 12px;
+    border-bottom: 1px solid var(--surface-border);
+    vertical-align: middle;
+    font-weight: 400;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.9rem;
+}
+
+.table tbody tr {
+    transition: var(--transition-smooth);
+}
+
+.table tbody tr:hover {
+    background-color: var(--background);
+}
+
+.table tbody tr:first-child td {
+    border-top: none;
+}
+
+.table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* Rounded Table Rows on Hover */
+.table tbody tr:hover td:first-child {
+    border-top-left-radius: 8px;
+    border-bottom-left-radius: 8px;
+}
+
+.table tbody tr:hover td:last-child {
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
+}
+
+/* Modern Status Pills */
+.status-pill {
+    display: inline-block;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: var(--transition-smooth);
+}
+
+.status-present {
+    background: rgba(25, 135, 84, 0.1);
+    color: var(--accent-action);
+}
+
+.status-absent {
+    background: rgba(220, 53, 69, 0.1);
+    color: #dc3545;
+}
+
+.status-pending {
+    background: rgba(255, 193, 7, 0.1);
+    color: #ffc107;
+}
+
+/* Enhanced Sidebar Active State */
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 260px;
+    background: var(--surface);
+    border-right: 1px solid var(--surface-border);
+    z-index: 1000;
+    transition: transform 0.3s ease;
+    box-shadow: 2px 0 6px rgba(0,0,0,0.04);
+}
+
+.nav-link {
+    display: flex;
+    align-items: center;
+    padding: 14px 24px;
+    color: var(--text-dark);
+    text-decoration: none;
+    transition: var(--transition-smooth);
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+    position: relative;
+    border-left: 4px solid transparent;
+}
+
+.nav-link:hover {
+    background-color: rgba(13, 110, 253, 0.05);
+    color: var(--text-dark);
+    padding-left: 28px;
+}
+
+.nav-link.active {
+    background-color: rgba(13, 110, 253, 0.08);
+    color: var(--primary-brand);
+    border-left: 4px solid var(--primary-brand);
+    font-weight: 700;
+}
+
+.nav-link.active::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    width: 4px;
+    background: var(--primary-brand);
+    box-shadow: 0 0 10px rgba(13, 110, 253, 0.3);
+}
+
+/* Modern Loading Overlay */
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(2px);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.loading-overlay.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.loading-spinner {
+    width: 60px;
+    height: 60px;
+    position: relative;
+}
+
+.loading-spinner::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: 3px solid var(--surface-border);
+    border-top: 3px solid var(--primary-brand);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+.loading-spinner::after {
+    content: '';
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    width: 36px;
+    height: 36px;
+    border: 2px solid var(--surface-border);
+    border-top: 2px solid var(--primary-brand);
+    border-radius: 50%;
+    animation: spin 1.5s linear infinite reverse;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.loading-text {
+    margin-top: 20px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    color: var(--text-dark);
+    font-size: 1.1rem;
+}
+
+/* Button Enhancements */
+.btn {
+    font-family: 'Inter', sans-serif;
+    font-weight: 600;
+    border-radius: 8px;
+    transition: var(--transition-smooth);
+    position: relative;
+    overflow: hidden;
+}
+
+.btn::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+}
+
+.btn:hover::before {
+    width: 300px;
+    height: 300px;
+}
+
+/* Form Enhancements */
+.form-control {
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+    border-radius: 8px;
+    border: 1px solid var(--surface-border);
+    transition: var(--transition-smooth);
+    padding: 12px 16px;
+}
+
+.form-control:focus {
+    border-color: var(--primary-brand);
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
+}
+
+.form-floating label {
+    color: var(--text-light);
+    font-weight: 500;
+}
+
+/* Micro-interactions */
+.clickable {
+    cursor: pointer;
+    transition: var(--transition-smooth);
+}
+
+.clickable:hover {
+    transform: scale(1.02);
+}
+
+/* Responsive Enhancements */
+@media (max-width: 768px) {
+    .sidebar {
+        transform: translateX(-100%);
+    }
+
+    .sidebar.show {
+        transform: translateX(0);
+    }
+
+    .main-content {
+        margin-left: 0;
+    }
+
+    .mobile-toggle {
+        display: block;
+    }
+
+    .content-area {
+        padding: 70px 20px 20px;
+    }
+
+    .modern-card {
+        margin-bottom: 20px;
+        padding: 20px;
+    }
+}
+
+/* Smooth Scrolling */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Focus States */
+.btn:focus, .form-control:focus, .nav-link:focus {
+    outline: none;
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
+}

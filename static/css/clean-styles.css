@@ -1,0 +1,431 @@
+/* Clean Professional Design System - Strict 6-Color Palette */
+:root {
+    /* Strict Color Palette */
+    --primary-brand: #0d6efd;      /* Soft Professional Blue */
+    --background: #f4f6f9;         /* Very Light Grey-Blue */
+    --surface: #ffffff;              /* Pure White */
+    --text-dark: #2c3e50;          /* Dark Navy */
+    --text-light: #6c757d;         /* Grey */
+    --accent-action: #198754;        /* Green */
+    
+    /* Derived Colors */
+    --primary-hover: #0b5ed7;
+    --accent-hover: #157347;
+    --surface-border: #dee2e6;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background-color: var(--background);
+    color: var(--text-dark);
+    line-height: 1.6;
+}
+
+/* Sidebar - Clean White Design */
+.sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 260px;
+    background: var(--surface);
+    border-right: 1px solid var(--surface-border);
+    z-index: 1000;
+    transition: transform 0.3s ease;
+    box-shadow: 2px 0 6px rgba(0,0,0,0.04);
+}
+
+.sidebar-header {
+    padding: 24px 20px;
+    border-bottom: 1px solid var(--surface-border);
+    text-align: center;
+}
+
+.sidebar-logo {
+    color: var(--text-dark);
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.sidebar-subtitle {
+    color: var(--text-light);
+    font-size: 0.85rem;
+}
+
+.sidebar-nav {
+    padding: 20px 0;
+}
+
+.nav-link {
+    display: flex;
+    align-items: center;
+    padding: 14px 24px;
+    color: var(--text-dark);
+    text-decoration: none;
+    transition: all 0.2s ease;
+    font-weight: 500;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+}
+
+.nav-link:hover {
+    background-color: var(--background);
+    color: var(--text-dark);
+}
+
+.nav-link.active {
+    background-color: var(--primary-brand);
+    color: white;
+}
+
+.nav-link i {
+    width: 20px;
+    margin-right: 12px;
+    text-align: center;
+    font-size: 0.95rem;
+}
+
+/* Main Content Area */
+.main-content {
+    margin-left: 260px;
+    min-height: 100vh;
+    transition: margin-left 0.3s ease;
+}
+
+/* Top Navbar */
+.top-navbar {
+    background: var(--surface);
+    padding: 16px 30px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--surface-border);
+}
+
+.navbar-title {
+    color: var(--text-dark);
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.navbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.navbar-btn {
+    background: var(--primary-brand);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    font-weight: 500;
+    font-size: 0.9rem;
+}
+
+.navbar-btn:hover {
+    background-color: var(--primary-hover);
+}
+
+/* Content Area */
+.content-area {
+    padding: 30px;
+}
+
+/* Cards - Soft Floating Design */
+.modern-card {
+    background: var(--surface);
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    padding: 24px;
+    margin-bottom: 24px;
+    transition: box-shadow 0.2s ease;
+    border: 1px solid var(--surface-border);
+}
+
+.modern-card:hover {
+    box-shadow: 0 6px 12px rgba(0,0,0,0.08);
+}
+
+/* Stats Cards - Clean and Professional */
+.stat-card {
+    background: var(--surface);
+    border-radius: 8px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    border: 1px solid var(--surface-border);
+    transition: all 0.2s ease;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 15px rgba(0,0,0,0.08);
+}
+
+.stat-card.accent {
+    border-left: 4px solid var(--accent-action);
+}
+
+.stat-card.primary {
+    border-left: 4px solid var(--primary-brand);
+}
+
+.stat-icon {
+    font-size: 2.2rem;
+    margin-bottom: 12px;
+    color: var(--primary-brand);
+}
+
+.stat-card.accent .stat-icon {
+    color: var(--accent-action);
+}
+
+.stat-number {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin-bottom: 4px;
+}
+
+.stat-label {
+    font-size: 0.9rem;
+    color: var(--text-light);
+    font-weight: 500;
+}
+
+/* Video Monitor - Clean Design */
+.video-monitor {
+    background: #1a1d23;
+    border-radius: 8px;
+    padding: 16px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    position: relative;
+    border: 1px solid var(--surface-border);
+}
+
+.video-feed {
+    width: 100%;
+    height: auto;
+    border-radius: 4px;
+    display: block;
+}
+
+.monitor-label {
+    position: absolute;
+    top: 24px;
+    left: 24px;
+    background: var(--accent-action);
+    color: white;
+    padding: 4px 12px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    z-index: 10;
+}
+
+/* Buttons - Professional and Consistent */
+.btn-primary {
+    background: var(--primary-brand);
+    border-color: var(--primary-brand);
+    color: white;
+    font-weight: 500;
+}
+
+.btn-primary:hover {
+    background: var(--primary-hover);
+    border-color: var(--primary-hover);
+}
+
+.btn-success {
+    background: var(--accent-action);
+    border-color: var(--accent-action);
+    color: white;
+    font-weight: 500;
+}
+
+.btn-success:hover {
+    background: var(--accent-hover);
+    border-color: var(--accent-hover);
+}
+
+.btn-outline-secondary {
+    color: var(--text-light);
+    border-color: var(--surface-border);
+    background: var(--surface);
+}
+
+.btn-outline-secondary:hover {
+    background: var(--background);
+    border-color: var(--text-light);
+    color: var(--text-dark);
+}
+
+.btn-outline-primary {
+    color: var(--primary-brand);
+    border-color: var(--primary-brand);
+    background: var(--surface);
+}
+
+.btn-outline-primary:hover {
+    background: var(--primary-brand);
+    color: white;
+}
+
+.btn-outline-primary.active {
+    background: var(--primary-brand);
+    color: white;
+}
+
+/* Badges */
+.badge.bg-primary {
+    background: var(--primary-brand) !important;
+}
+
+.badge.bg-success {
+    background: var(--accent-action) !important;
+}
+
+/* Forms - Clean Design */
+.form-control:focus {
+    border-color: var(--primary-brand);
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
+}
+
+.form-floating label {
+    color: var(--text-light);
+}
+
+.form-floating > .form-control:focus ~ label {
+    color: var(--primary-brand);
+}
+
+/* Tables - Clean Professional */
+.modern-table {
+    background: var(--surface);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    border: 1px solid var(--surface-border);
+}
+
+.table {
+    margin-bottom: 0;
+}
+
+.table thead th {
+    background: var(--background);
+    color: var(--text-dark);
+    font-weight: 600;
+    border-bottom: 2px solid var(--surface-border);
+    padding: 16px 12px;
+}
+
+.table tbody td {
+    padding: 14px 12px;
+    border-bottom: 1px solid #f1f3f5;
+    vertical-align: middle;
+}
+
+.table-hover tbody tr:hover {
+    background: var(--background);
+}
+
+/* Status Indicators */
+.status-present {
+    color: var(--accent-action);
+    font-weight: 600;
+}
+
+.status-absent {
+    color: #dc3545; /* Only red for absent status */
+    font-weight: 600;
+}
+
+/* Loading Spinner */
+.loading-spinner {
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.loading-spinner.show {
+    opacity: 1;
+}
+
+/* Mobile Responsiveness */
+.mobile-toggle {
+    display: none;
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 1001;
+    background: var(--primary-brand);
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+@media (max-width: 768px) {
+    .sidebar {
+        transform: translateX(-100%);
+    }
+
+    .sidebar.show {
+        transform: translateX(0);
+    }
+
+    .main-content {
+        margin-left: 0;
+    }
+
+    .mobile-toggle {
+        display: block;
+    }
+
+    .content-area {
+        padding: 70px 20px 20px;
+    }
+}
+
+/* Remove harsh borders and focus outlines */
+.btn:focus {
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
+}
+
+.form-control:focus {
+    box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.15);
+    border-color: var(--primary-brand);
+}
+
+/* Consistent spacing */
+.mt-4 { margin-top: 1.5rem !important; }
+.mb-4 { margin-bottom: 1.5rem !important; }
+.p-4 { padding: 1.5rem !important; }
+.p-3 { padding: 1rem !important; }
+
+/* Typography improvements */
+h5 {
+    color: var(--text-dark);
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.text-muted {
+    color: var(--text-light) !important;
+}

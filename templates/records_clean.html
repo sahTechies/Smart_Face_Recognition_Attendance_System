@@ -1,0 +1,409 @@
+{% extends "base_clean.html" %}
+
+{% block title %}Attendance Records - Digital Attendance System{% endblock %}
+
+{% block page_title %}Attendance Records{% endblock %}
+
+{% block content %}
+<!-- Filter Section -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="modern-card">
+            <div class="d-flex justify-content-between align-items-center flex-wrap">
+                <div>
+                    <h5 class="mb-3">Filter Records</h5>
+                    <div class="btn-group mb-2" role="group">
+                        <a href="/attendance_record?period=all&view=present" 
+                           class="btn btn-outline-primary {% if view_type != 'absent' %}active{% endif %}">
+                            All Present
+                        </a>
+                        <a href="/attendance_record?period=daily&view=present" 
+                           class="btn btn-outline-primary {% if period == 'daily' and view_type != 'absent' %}active{% endif %}">
+                            Daily Present
+                        </a>
+                        <a href="/attendance_record?period=weekly&view=present" 
+                           class="btn btn-outline-primary {% if period == 'weekly' and view_type != 'absent' %}active{% endif %}">
+                            Weekly Present
+                        </a>
+                        <a href="/attendance_record?period=monthly&view=present" 
+                           class="btn btn-outline-primary {% if period == 'monthly' and view_type != 'absent' %}active{% endif %}">
+                            Monthly Present
+                        </a>
+                    </div>
+                    <div class="btn-group" role="group">
+                        <a href="/attendance_record?period=daily&view=absent" 
+                           class="btn btn-outline-primary {% if view_type == 'absent' and period == 'daily' %}active{% endif %}">
+                            Daily Absent
+                        </a>
+                        <a href="/attendance_record?period=weekly&view=absent" 
+                           class="btn btn-outline-primary {% if view_type == 'absent' and period == 'weekly' %}active{% endif %}">
+                            Weekly Absent
+                        </a>
+                        <a href="/attendance_record?period=monthly&view=absent" 
+                           class="btn btn-outline-primary {% if view_type == 'absent' and period == 'monthly' %}active{% endif %}">
+                            Monthly Absent
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="d-flex gap-2 align-items-center">
+                    {% if view_type == "absent" %}
+                        <span class="badge bg-primary">
+                            <i class="fas fa-user-times"></i> {{ records|length }} Absent
+                        </span>
+                    {% else %}
+                        <span class="badge bg-success">
+                            <i class="fas fa-user-check"></i> {{ records|length }} Present
+                        </span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Email Notification Section -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="modern-card">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h5 class="mb-0">
+                    Send Attendance Emails
+                </h5>
+                <span class="badge bg-primary">Bulk Notifications</span>
+            </div>
+            
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label for="emailDate" class="form-label fw-bold">
+                        <i class="fas fa-calendar"></i> Select Date for Email Report:
+                    </label>
+                    <input type="date" id="emailDate" class="form-control" max="">
+                    <div class="form-text text-muted">
+                        Emails will be sent to all students/parents for the selected date
+                    </div>
+                </div>
+                <div class="col-md-6 d-flex align-items-end">
+                    <button onclick="sendAttendanceEmails()" class="btn btn-success" id="sendEmailBtn">
+                        <span id="emailBtnText">
+                            <i class="fas fa-paper-plane"></i> Send Emails
+                        </span>
+                        <span class="spinner-border spinner-border-sm loading-spinner ms-2" role="status"></span>
+                    </button>
+                    <button onclick="downloadDailyAttendance()" class="btn btn-outline-secondary ms-2">
+                        <i class="fas fa-download"></i> Download CSV
+                    </button>
+                </div>
+            </div>
+            
+            <div id="emailStatus" class="mt-3" style="display: none;">
+                <div class="alert alert-info d-flex align-items-center">
+                    <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+                    <div>
+                        <strong>Status:</strong> <span id="emailStatusText">Preparing to send emails...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Attendance Records Table -->
+<div class="row">
+    <div class="col-12">
+        <div class="modern-card">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h5 class="mb-0">
+                    {% if view_type == "absent" %}Absent Students{% else %}Present Students{% endif %}
+                </h5>
+                <div>
+                    <button onclick="exportTableData()" class="btn btn-outline-secondary btn-sm">
+                        <i class="fas fa-file-excel"></i> Export
+                    </button>
+                    <button onclick="printTable()" class="btn btn-outline-secondary btn-sm">
+                        <i class="fas fa-print"></i> Print
+                    </button>
+                </div>
+            </div>
+            
+            <div class="table-responsive modern-table">
+                <table class="table table-hover" id="attendanceTable">
+                    <thead>
+                        {% if view_type == "absent" %}
+                            <tr>
+                                <th>Student ID</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Roll No</th>
+                                <th>Class</th>
+                                <th>Section</th>
+                                <th>Reg No</th>
+                                <th>Registered On</th>
+                                <th>Actions</th>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <th>ID</th>
+                                <th>Student ID</th>
+                                <th>Name</th>
+                                <th>Timestamp (UTC)</th>
+                                <th>Actions</th>
+                            </tr>
+                        {% endif %}
+                    </thead>
+                    <tbody>
+                        {% if records|length == 0 %}
+                            <tr>
+                                <td colspan="{% if view_type == 'absent' %}9{% else %}5{% endif %}" class="text-center py-5">
+                                    <div>
+                                        <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                                        <h6 class="text-muted">No Records Found</h6>
+                                        <p class="text-muted">
+                                            {% if view_type == "absent" %}
+                                                {% if period == "daily" %}
+                                                    No absent students found for today. All students have marked attendance!
+                                                {% elif period == "weekly" %}
+                                                    No absent students found for this week. All students have marked attendance!
+                                                {% elif period == "monthly" %}
+                                                    No absent students found for this month. All students have marked attendance!
+                                                {% else %}
+                                                    No absent students found.
+                                                {% endif %}
+                                            {% else %}
+                                                No attendance records found for this period.
+                                            {% endif %}
+                                        </p>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% else %}
+                            {% for r in records %}
+                                {% if view_type == "absent" %}
+                                    <tr>
+                                        <td><strong>{{ r[0] }}</strong></td>
+                                        <td>{{ r[1] or '-' }}</td>
+                                        <td>
+                                            {% if r[2] %}
+                                                <a href="mailto:{{ r[2] }}" class="text-decoration-none">
+                                                    <i class="fas fa-envelope"></i> {{ r[2] }}
+                                                </a>
+                                            {% else %}
+                                                <span class="text-muted">No Email</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ r[3] or '-' }}</td>
+                                        <td>{{ r[4] or '-' }}</td>
+                                        <td>{{ r[5] or '-' }}</td>
+                                        <td>{{ r[6] or '-' }}</td>
+                                        <td>{{ r[7] or '-' }}</td>
+                                        <td>
+                                            <button class="btn btn-outline-primary btn-sm" onclick="viewStudentDetails({{ r[0] }})">
+                                                <i class="fas fa-eye"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                {% else %}
+                                    <tr>
+                                        <td>{{ r[0] }}</td>
+                                        <td>{{ r[1] }}</td>
+                                        <td>
+                                            <span class="status-present">
+                                                <i class="fas fa-user-check"></i> {{ r[2] }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <i class="fas fa-clock text-muted"></i>
+                                            {{ r[3] }}
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-outline-primary btn-sm" onclick="viewAttendanceDetails({{ r[0] }})">
+                                                <i class="fas fa-info-circle"></i> Details
+                                            </button>
+                                        </td>
+                                    </tr>
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+            
+            {% if records|length > 0 %}
+            <div class="d-flex justify-content-between align-items-center mt-4">
+                <div class="text-muted">
+                    <i class="fas fa-info-circle"></i> 
+                    Showing {{ records|length }} records
+                </div>
+                <div>
+                    <span class="badge bg-primary">
+                        <i class="fas fa-database"></i> Total: {{ records|length }}
+                    </span>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Initialize email date input with today's date
+document.addEventListener('DOMContentLoaded', function() {
+    const emailDate = document.getElementById('emailDate');
+    const today = new Date().toISOString().split('T')[0];
+    emailDate.max = today;
+    emailDate.value = today;
+});
+
+function downloadDailyAttendance() {
+    const dateInput = prompt("Enter date for daily attendance report (YYYY-MM-DD) or press OK for today:", new Date().toISOString().split('T')[0]);
+    
+    if (dateInput === null) return;
+    
+    let date = dateInput.trim() || new Date().toISOString().split('T')[0];
+    
+    if (!date.match(/^\d{4}-\d{2}-\d{2}$/)) {
+        alert('Invalid date format. Please use YYYY-MM-DD format.');
+        return;
+    }
+    
+    window.open(`/download_daily_attendance?date=${encodeURIComponent(date)}`, '_blank');
+}
+
+async function sendAttendanceEmails() {
+    const emailDate = document.getElementById('emailDate').value;
+    const sendBtn = document.getElementById('sendEmailBtn');
+    const btnText = document.getElementById('emailBtnText');
+    const emailStatus = document.getElementById('emailStatus');
+    const statusText = document.getElementById('emailStatusText');
+    const spinner = sendBtn.querySelector('.loading-spinner');
+    
+    if (!emailDate) {
+        showNotification('Please select a date for the email report', 'warning');
+        return;
+    }
+    
+    const confirmMessage = `Are you sure you want to send attendance emails for ${emailDate}?\n\nEmails will be sent to all students/parents informing them of their attendance status.`;
+    
+    if (!confirm(confirmMessage)) return;
+    
+    // Disable button and show loading
+    sendBtn.disabled = true;
+    spinner.classList.add('show');
+    emailStatus.style.display = 'block';
+    statusText.textContent = 'Connecting to email server...';
+    
+    try {
+        const response = await fetch('/send_emails', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ date: emailDate })
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            statusText.innerHTML = `
+                <div class="text-success">
+                    <i class="fas fa-check-circle"></i> <strong>Email sending completed successfully!</strong><br>
+                    📧 Sent: ${result.emails_sent}<br>
+                    ${result.emails_failed > 0 ? `❌ Failed: ${result.emails_failed}<br>` : ''}
+                    📅 Date: ${emailDate}<br>
+                    👥 Total Students: ${result.total_students}
+                </div>
+            `;
+            
+            showNotification(`Email sending completed!`, 'success');
+        } else {
+            statusText.innerHTML = `
+                <div class="text-danger">
+                    <i class="fas fa-exclamation-circle"></i> <strong>Email sending failed</strong><br>
+                    Error: ${result.message}
+                </div>
+            `;
+            
+            showNotification(`Failed to send emails: ${result.message}`, 'danger');
+        }
+    } catch (error) {
+        console.error('Email sending error:', error);
+        statusText.innerHTML = `
+            <div class="text-danger">
+                <i class="fas fa-exclamation-triangle"></i> <strong>Network error</strong><br>
+                Please check your internet connection and try again.
+            </div>
+        `;
+        
+        showNotification('Network error occurred while sending emails. Please try again.', 'danger');
+    } finally {
+        sendBtn.disabled = false;
+        spinner.classList.remove('show');
+        
+        setTimeout(() => {
+            emailStatus.style.display = 'none';
+        }, 10000);
+    }
+}
+
+function viewStudentDetails(studentId) {
+    console.log('View student:', studentId);
+}
+
+function viewAttendanceDetails(attendanceId) {
+    console.log('View attendance:', attendanceId);
+}
+
+function exportTableData() {
+    const table = document.getElementById('attendanceTable');
+    let csv = [];
+    
+    // Get headers
+    const headers = [];
+    table.querySelectorAll('thead th').forEach(th => {
+        headers.push(th.textContent.trim());
+    });
+    csv.push(headers.join(','));
+    
+    // Get rows
+    table.querySelectorAll('tbody tr').forEach(row => {
+        const rowData = [];
+        row.querySelectorAll('td').forEach(td => {
+            rowData.push('"' + td.textContent.trim() + '"');
+        });
+        csv.push(rowData.join(','));
+    });
+    
+    // Download CSV
+    const csvContent = csv.join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `attendance_export_${new Date().toISOString().split('T')[0]}.csv`;
+    a.click();
+    window.URL.revokeObjectURL(url);
+}
+
+function printTable() {
+    window.print();
+}
+
+function showNotification(message, type = 'primary') {
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+    alertDiv.style.cssText = 'top: 20px; right: 20px; z-index: 9999; min-width: 300px;';
+    alertDiv.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    `;
+    
+    document.body.appendChild(alertDiv);
+    
+    setTimeout(() => {
+        if (alertDiv.parentNode) {
+            alertDiv.parentNode.removeChild(alertDiv);
+        }
+    }, 5000);
+}
+</script>
+{% endblock %}

@@ -1,0 +1,292 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/><meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>Registered Students</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <style>
+    .student-count {
+      background: #28a745;
+      color: white;
+      padding: 5px 10px;
+      border-radius: 15px;
+      font-size: 0.9em;
+    }
+    .table-responsive {
+      max-height: 70vh;
+      overflow-y: auto;
+    }
+    .student-checkbox {
+      transform: scale(1.2);
+      cursor: pointer;
+    }
+    .selected-row {
+      background-color: #fff3cd !important;
+    }
+    #deleteBtn:disabled {
+      cursor: not-allowed;
+    }
+    .delete-warning {
+      background-color: #f8d7da;
+      border: 1px solid #f5c6cb;
+      border-radius: 5px;
+      padding: 10px;
+      margin: 10px 0;
+    }
+  </style>
+</head>
+<body>
+<div class="container my-4">
+  <div class="card p-4 shadow-sm">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <div>
+        <h4>Registered Students</h4>
+        <span class="student-count" id="studentCount">Loading...</span>
+      </div>
+      <div>
+        <button onclick="deleteSelectedStudents()" class="btn btn-danger" id="deleteBtn" disabled>🗑️ Delete Selected</button>
+        <button onclick="downloadDailyAttendance()" class="btn btn-primary">📊 Daily Attendance (Today)</button>
+        <a href="/" class="btn btn-secondary">← Back to Home</a>
+        <button onclick="downloadCSV()" class="btn btn-success">📥 Download CSV</button>
+      </div>
+    </div>
+
+    <div class="table-responsive">
+      <table class="table table-striped table-hover">
+        <thead class="table-dark sticky-top">
+          <tr>
+            <th>
+              <input type="checkbox" id="selectAll" onchange="toggleSelectAll()">
+            </th>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Roll No</th>
+            <th>Class</th>
+            <th>Section</th>
+            <th>Reg No</th>
+            <th>Registered On</th>
+          </tr>
+        </thead>
+        <tbody id="studentsTableBody">
+          <tr>
+            <td colspan="7" class="text-center">Loading students data...</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+let studentsData = [];
+
+async function loadStudents() {
+  try {
+    const response = await fetch('/students');
+    const result = await response.json();
+    studentsData = result.students || [];
+    
+    displayStudents();
+    updateStudentCount();
+  } catch (error) {
+    console.error('Error loading students:', error);
+    document.getElementById('studentsTableBody').innerHTML = 
+      '<tr><td colspan="7" class="text-center text-danger">Error loading students data</td></tr>';
+  }
+}
+
+function displayStudents() {
+  const tbody = document.getElementById('studentsTableBody');
+  
+  if (studentsData.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="7" class="text-center">No registered students found</td></tr>';
+    return;
+  }
+  
+  tbody.innerHTML = studentsData.map(student => `
+    <tr>
+      <td>
+        <input type="checkbox" class="student-checkbox" data-id="${student.id}" onchange="updateDeleteButton()">
+      </td>
+      <td><strong>${student.id}</strong></td>
+      <td>${student.name || '-'}</td>
+      <td>${student.email ? `<a href="mailto:${student.email}" class="text-decoration-none">${student.email}</a>` : '-'}</td>
+      <td>${student.roll || '-'}</td>
+      <td>${student.class || '-'}</td>
+      <td>${student.section || '-'}</td>
+      <td>${student.reg_no || '-'}</td>
+      <td>${formatDate(student.created_at)}</td>
+    </tr>
+  `).join('');
+}
+
+function updateStudentCount() {
+  document.getElementById('studentCount').textContent = `${studentsData.length} Students`;
+}
+
+function toggleSelectAll() {
+  const selectAll = document.getElementById('selectAll');
+  const checkboxes = document.querySelectorAll('.student-checkbox');
+  checkboxes.forEach(checkbox => {
+    checkbox.checked = selectAll.checked;
+  });
+  updateDeleteButton();
+}
+
+function updateDeleteButton() {
+  const selectedCheckboxes = document.querySelectorAll('.student-checkbox:checked');
+  const deleteBtn = document.getElementById('deleteBtn');
+  
+  // Highlight selected rows
+  document.querySelectorAll('tbody tr').forEach(row => {
+    const checkbox = row.querySelector('.student-checkbox');
+    if (checkbox && checkbox.checked) {
+      row.classList.add('selected-row');
+    } else {
+      row.classList.remove('selected-row');
+    }
+  });
+  
+  if (selectedCheckboxes.length > 0) {
+    deleteBtn.disabled = false;
+    deleteBtn.textContent = `🗑️ Delete Selected (${selectedCheckboxes.length})`;
+  } else {
+    deleteBtn.disabled = true;
+    deleteBtn.textContent = '🗑️ Delete Selected';
+  }
+}
+
+function deleteSelectedStudents() {
+  const selectedCheckboxes = document.querySelectorAll('.student-checkbox:checked');
+  
+  if (selectedCheckboxes.length === 0) {
+    alert('Please select at least one student to delete.');
+    return;
+  }
+  
+  const studentNames = [];
+  const studentIds = [];
+  
+  selectedCheckboxes.forEach(checkbox => {
+    const studentId = parseInt(checkbox.dataset.id);
+    const student = studentsData.find(s => s.id === studentId);
+    if (student) {
+      studentNames.push(student.name);
+      studentIds.push(studentId);
+    }
+  });
+  
+  const confirmMessage = `Are you sure you want to delete the following students?\n\n${studentNames.join('\n')}\n\nThis will also delete all their attendance records and face data. This action cannot be undone!`;
+  
+  if (confirm(confirmMessage)) {
+    deleteStudents(studentIds);
+  }
+}
+
+async function deleteStudents(studentIds) {
+  try {
+    const deletePromises = studentIds.map(async (studentId) => {
+      const response = await fetch(`/students/${studentId}`, {
+        method: 'DELETE'
+      });
+      
+      if (!response.ok) {
+        throw new Error(`Failed to delete student ${studentId}`);
+      }
+      
+      return response.json();
+    });
+    
+    await Promise.all(deletePromises);
+    
+    // Reload the students data
+    await loadStudents();
+    
+    // Reset checkboxes
+    document.getElementById('selectAll').checked = false;
+    updateDeleteButton();
+    
+    alert(`Successfully deleted ${studentIds.length} student(s).`);
+    
+  } catch (error) {
+    console.error('Error deleting students:', error);
+    alert('Error deleting students. Please try again.');
+  }
+}
+
+function formatDate(dateString) {
+  if (!dateString) return '-';
+  try {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  } catch {
+    return dateString;
+  }
+}
+
+function downloadCSV() {
+  if (studentsData.length === 0) {
+    alert('No student data available to download');
+    return;
+  }
+  
+  // Create CSV content
+  const headers = ['ID', 'Name', 'Email', 'Roll No', 'Class', 'Section', 'Reg No', 'Registered On'];
+  const csvContent = [
+    headers.join(','),
+    ...studentsData.map(student => [
+      student.id,
+      `"${student.name || ''}"`,
+      `"${student.email || ''}"`,
+      `"${student.roll || ''}"`,
+      `"${student.class || ''}"`,
+      `"${student.section || ''}"`,
+      `"${student.reg_no || ''}"`,
+      `"${formatDate(student.created_at)}"`
+    ].join(','))
+  ].join('\n');
+  
+  // Download CSV file
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const link = document.createElement('a');
+  const url = URL.createObjectURL(blob);
+  link.setAttribute('href', url);
+  link.setAttribute('download', `registered_students_${new Date().toISOString().split('T')[0]}.csv`);
+  link.style.visibility = 'hidden';
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+
+function downloadDailyAttendance() {
+  const dateInput = prompt("Enter date for daily attendance report (YYYY-MM-DD) or press OK for today:", new Date().toISOString().split('T')[0]);
+  
+  if (dateInput === null) {
+    return; // User cancelled
+  }
+  
+  let date = dateInput.trim() || new Date().toISOString().split('T')[0];
+  
+  // Validate date format
+  if (!date.match(/^\d{4}-\d{2}-\d{2}$/)) {
+    alert('Invalid date format. Please use YYYY-MM-DD format.');
+    return;
+  }
+  
+  // Download daily attendance CSV
+  window.open(`/download_daily_attendance?date=${encodeURIComponent(date)}`, '_blank');
+}
+
+// Load students when page loads
+document.addEventListener('DOMContentLoaded', loadStudents);
+</script>
+</body>
+</html>
